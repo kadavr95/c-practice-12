@@ -32,45 +32,45 @@ int filling(int qty, int *array)
 	srand(stime);
 	for (i = 1; i <=qty ; i++)
 	{
-	  array[i]=-RAND_MAX+2*rand();
+		array[i]=-RAND_MAX+2*rand();
 	}
 }
 
 int output(int qty, int *array)//function of output
 {
- int i,j,cycles;//declaration of variables
- printf("|   Element   |");
- for (i = 1; i <=qty; i++) //repeats for all elements
- {
-  printf(" %10d |",i);//output of element number
-  if ((i%5==0)&&(i!=qty)) //catching end of line
-  {
-   printf("|    Value    |");
-   for (j=5; j >=1; j--)//output of values
-   {
-	printf(" %10d |",(array[i-j]));
-   }
+	int i,j,cycles;//declaration of variables
 	printf("|   Element   |");
-  }
-  else //or last element
-  {
-   if (i==qty)
-   {
-	if (i%5!=0)
+	for (i = 1; i <=qty; i++) //repeats for all elements
 	{
-	 printf("\n");
-	}
-	printf("|    Value    |");//output of values
-	if (i%5==0)
-	 cycles=5;
-	else
-	 cycles=(i%5);
-	for (j=cycles; j >=1; j--)
-	{
-	 printf(" %10d |",array[i-j]);
-	}
-	printf("\n\n"); //indent before next array
-   }
+		printf(" %10d |",i);//output of element number
+		if ((i%5==0)&&(i!=qty)) //catching end of line
+		{
+			printf("|    Value    |");
+			for (j=5; j >=1; j--)//output of values
+			{
+				printf(" %10d |",(array[i-j]));
+			}
+			printf("|   Element   |");
+		}
+		else //or last element
+		{
+			if (i==qty)
+			{
+				if (i%5!=0)
+				{
+					printf("\n");
+				}
+				printf("|    Value    |");//output of values
+				if (i%5==0)
+					cycles=5;
+				else
+					cycles=(i%5);
+				for (j=cycles; j >=1; j--)
+				{
+					printf(" %10d |",array[i-j]);
+				}
+		     		printf("\n\n"); //indent before next array
+		   }
   }
  }
 }
@@ -95,6 +95,6 @@ int maximum(int qty, int *array, int *max)
    *max=array[i-1];
   }
  }
- printf("Maximum: %d |",*max);
+ printf("Maximum: %d |\n",*max);
 }
 
