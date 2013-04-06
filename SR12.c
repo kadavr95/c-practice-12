@@ -7,6 +7,7 @@ int output(int qty, int *array);
 int null(int qty,int *array);
 int maximum(int qty, int *array, int *max);
 
+
 int main(void)//main function
 {
 	int *array, arraysize,n;
@@ -69,32 +70,32 @@ int output(int qty, int *array)//function of output
 				{
 					printf(" %10d |",array[i-j]);
 				}
-		     		printf("\n\n"); //indent before next array
-		   }
-  }
- }
+				printf("\n\n"); //indent before next array
+			}
+		}
+	}
 }
 
 int null(int qty, int *array)//function of
 {
- int i;//declaration of variables
- for (i = 1; i <=qty; i++)//filling array
- {
-  array[i-1]=0;
- }
+	int i;//declaration of variables
+	for (i = 1; i <=qty; i++)//filling array
+	{
+		array[i-1]=0;
+	}
 }
 
 int maximum(int qty, int *array, int *max)
 {
- int i;
- *max=0;
- for (i = 1; i <=qty; i++)
- {
-  if (max>array[i-1])
-  {
-   *max=array[i-1];
-  }
- }
- printf("Maximum: %d |\n",*max);
+	int i;
+	*max=0;
+	for (i = 1; i <=qty; i++)
+	{
+		if (max>array[i-1])
+		{
+			*max=array[i-1];
+		}
+	}
+	printf("Maximum: %d |\n",*max);
 }
 
