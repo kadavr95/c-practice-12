@@ -2,7 +2,7 @@
 #include <stdio.h>//подключение библиотек
 #include <stdlib.h>
 
-int filling(int qty, int *array); //прототипы функций
+int filling(int low, int up, int qty, int *array); //прототипы функций
 int output(int qty, int *array);
 int null(int qty,int *array);
 int maximum(int qty, int *array, int *max);
@@ -11,16 +11,26 @@ int readfromfile(int *qty, int *array);
 int checkn(int qty, int nmax, int *n);
 int replace(int n,int *array);
 int checkposnum(int qty, int *pos, int *num);
-int arrayinsert(int pos, int num, int *qty, int *array);
+int arrayinsert(int low, int up,int pos, int num, int *qty, int *array);
 int arraycutoff(int pos, int num, int *qty, int *array);
+int checksize(int *arraysize);
 
 int main(void)//главная функция
 {
-	int *array, arraysize,n,nmax,position,number;//определение переменных
+	int *array, arraysize,n,nmax,position,number,low,up;//определение переменных
 	printf("Enter quantity of elements in array: ");//ввод количества элементов в массиве
 	scanf("%d", &arraysize);
+	checksize(&arraysize);
 	array = malloc((n+1)*sizeof(int));//создание массива
-	filling(arraysize,array);//заполнеие массива
+	printf("Enter limits: ");//ввод пределов
+	scanf("%d %d", &low,&up);
+	if (low>up)
+	{
+		up=low-up;
+		low=low-up;
+		up=low+up;
+	}
+	filling(low,up,arraysize,array);//заполнеие массива
 	output(arraysize,array);//вывод массива
 	nmax=arraysize/2;//определение максимально допустимого числа элементов для перестановки
 	printf("Enter quantity of elements to be rearranged (it must be less or equal to %d): ",nmax);//ввод количества элементов для перестановки
@@ -36,7 +46,7 @@ int main(void)//главная функция
 	checkposnum(arraysize,&position,&number);//проверка количества элементов и позиции
 	if (number>=0)//выбор добавления/удаления
 	{
-		arrayinsert(position,number,&arraysize,array);//добавление элементов
+		arrayinsert(low,up,position,number,&arraysize,array);//добавление элементов
 	}
 	else
 	{
@@ -48,24 +58,26 @@ int main(void)//главная функция
 	return 0;
 }
 
-int filling(int qty, int *array)//заполнение массива
+int filling(int low, int up, int qty, int *array)//заполнение массива
 {
 	int i;//определение переменных
-	int stime;
-	long int ltime;
-	ltime=time(NULL);//создание случайной последовательности
-	stime=(unsigned) ltime/2;
-	srand(stime);
 	for (i = 1; i <=qty ; i++)//заполнение массива
 	{
-		array[i]=-RAND_MAX+2*rand();
+		array[i]=low+(up-low)*rand()/RAND_MAX;
 	}
 }
 
 int output(int qty, int *array)//вывод массива
 {
 	int i,j,cycles;//определение переменных
-	printf("|   Element   |");
+	if (qty>0)
+	{
+		printf("|   Element   |");
+	}
+	else
+	{
+		printf("Array has no elements\n");
+    }
 	for (i = 1; i <=qty; i++) //цикл по всем элементам
 	{
 		printf(" %10d |",i);//вывод номера элемента в массиве
@@ -131,7 +143,7 @@ int savetofile(int qty, int *array)//сохранение массива в файл
 	filepointer = fopen("SR12", "w");//открытие файла
 	if (filepointer==NULL)//не удалось открыть
 	{
-		printf("Error while opening file.\n");//сообщение об ошибке
+		//сообщение об ошибке
 		exit(1);//выход
 	}
 	else//удалось открыть
@@ -169,7 +181,7 @@ int readfromfile(int *qty, int *array)
 
 int checkn(int qty, int nmax,int *n)//проверка количества элементов
 {
-	while (nmax<*n)//пока не будет веедено правильное число
+	while ((nmax<*n)||(*n<0))//пока не будет веедено правильное число
 	{
 		printf("This number is not allowed. Enter correct number: ");//ввод другого числа
 		scanf("%d", &*n);
@@ -189,14 +201,14 @@ int replace (int n,int *array)//замена элементов в массиве
 
 int checkposnum(int qty, int *pos, int *num)//проверка количества элементов и позиции
 {
-	while ((*pos<=0)||(*pos>qty)||(((*pos+abs(*num))>(qty+1))&&(*num<0)))//пока не будут введены правильные числа
+	while ((*pos<=0)||(*pos>qty+1)||(((*pos+abs(*num))>(qty+1))&&(*num<0)))//пока не будут введены правильные числа
 	{
-		printf("Position must be from 1 to %d, sum of position and absolute change must not exceed %d in case of removing elements. Enter correct: ",qty,qty+1);//ввод других чисел
+		printf("Position must be from 1 to %d, sum of position and absolute change must not exceed %d in case of removing elements. Enter correct: ",qty+1,qty+1);//ввод других чисел
 		scanf("%d %d", &*pos, &*num);
 	}
 }
 
-int arrayinsert(int pos, int num, int *qty, int *array)//добавление элементов
+int arrayinsert(int low, int up,int pos, int num, int *qty, int *array)//добавление элементов
 {
 	int i;//определение переменных
 	*qty=*qty+num;//изменение количества элементов
@@ -207,7 +219,7 @@ int arrayinsert(int pos, int num, int *qty, int *array)//добавление элементов
 	}
 	for (i = pos; i <=pos+num-1; i++)//заполнение освободившегося места случайными числами
 	{
-		array[i]=-RAND_MAX+2*rand();
+		array[i]=low+(up-low)*rand()/RAND_MAX;
 	}
 
 }
@@ -223,4 +235,12 @@ int arraycutoff(int pos, int num, int *qty, int *array)//удаление элементов
 
 }
 
+int checksize(int *arraysize)
+{
+	while (*arraysize<1)//пока не будет введено правильное число
+	{
+		printf("Quantity of elements in array must be more than zero. Enter correct quantity: ");//ввод другого числа
+		scanf("%d", &*arraysize);
+	}
 
+}
