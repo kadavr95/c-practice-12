@@ -14,10 +14,13 @@ int checkposnum(int qty, int *pos, int *num);
 int arrayinsert(int low, int up,int pos, int num, int *qty, int *array);
 int arraycutoff(int pos, int num, int *qty, int *array);
 int checksize(int *arraysize);
+int sort(int qel, int *qas, int *qco, int *array);
+int sort1(int qel, int *qas, int *qco, int *array);
+
 
 int main(void)//главная функция
 {
-	int *array, arraysize,n,nmax,position,number,low,up;//определение переменных
+	int *array, arraysize,n,nmax,position,number,low,up,asgn=0,cmpr=0,asgn1=0,cmpr1=0,asgnn=0,cmprn=0,asgnd=0,cmprd=0;//определение переменных
 	printf("Enter quantity of elements in array: ");//ввод количества элементов в массиве
 	scanf("%d", &arraysize);
 	checksize(&arraysize);
@@ -36,9 +39,6 @@ int main(void)//главная функция
 	printf("Enter quantity of elements to be rearranged (it must be less or equal to %d): ",nmax);//ввод количества элементов для перестановки
 	scanf("%d", &n);
 	checkn(arraysize,nmax,&n);//проверка количества элементов
-	savetofile(arraysize,array);//сохранение массива в файл
-	null(arraysize,array);//обнуление массива
-	readfromfile(&arraysize,array);//считывание массива из файла
 	replace(n,array);//замена элементов в массиве
 	output(arraysize,array);//вывод массива
 	printf("Enter position to place/remove elements and change in quantity: ");//ввод количества элементов для добавления или удаления и позиции с которой это надо сделать
@@ -53,6 +53,17 @@ int main(void)//главная функция
 		arraycutoff(position,number,&arraysize,array);//удаление элементов
 	}
 	output(arraysize,array);//вывод массива
+	savetofile(arraysize,array);//сохранение массива в файл
+	readfromfile(&arraysize,array);//считывание массива из файла
+	sort(arraysize, &asgn, &cmpr,array);//сортировка массива
+	output(arraysize,array);//вывод массива
+	printf("Quantity of assignments: %d\n",asgn);
+	printf("Quantity of comparisons: %d\n\n",cmpr);
+	readfromfile(&arraysize,array);//считывание массива из файла
+	sort1(arraysize, &asgn1, &cmpr1,array);//сортировка массива
+	output(arraysize,array);//вывод массива
+	printf("Quantity of assignments: %d\n",asgn1);
+	printf("Quantity of comparisons: %d\n\n",cmpr1);
 	fflush(stdin);//ожидание действий пользователя
 	getchar();
 	return 0;
@@ -61,6 +72,11 @@ int main(void)//главная функция
 int filling(int low, int up, int qty, int *array)//заполнение массива
 {
 	int i;//определение переменных
+	int stime;
+	long int ltime;
+	ltime=time(NULL);//создание случайной последовательности
+	stime=(unsigned) ltime/2;
+	srand(stime);
 	for (i = 1; i <=qty ; i++)//заполнение массива
 	{
 		array[i]=low+(up-low)*rand()/RAND_MAX;
@@ -211,6 +227,11 @@ int checkposnum(int qty, int *pos, int *num)//проверка количества элементов и по
 int arrayinsert(int low, int up,int pos, int num, int *qty, int *array)//добавление элементов
 {
 	int i;//определение переменных
+	int stime;
+	long int ltime;
+	ltime=time(NULL);//создание случайной последовательности
+	stime=(unsigned) ltime/2;
+	srand(stime);
 	*qty=*qty+num;//изменение количества элементов
 	*array=realloc(array,*qty*sizeof(int));//увеличение массива
 	for (i = (*qty-num); i >=pos ; i--)//сдвиг элементов к концу
@@ -244,3 +265,64 @@ int checksize(int *arraysize)
 	}
 
 }
+
+int sort(int qel, int *qas, int *qco, int *array)//сортировка массива
+{
+	int k,j,i; //определение переменных
+	for (k = 2; k <=qel ; k++)//проход по всем элементам после первого
+	{
+		array[0]=array[k];//передача сравниваемого элемента в нулевой элемент
+		*qas=*qas+1;//операция присваивания
+		j=1;//сброс счетчика
+		while((array[j]<array[0])&&(j<k))//проход по отсортированным элементам
+		{
+			j++;//изменение счетчика
+			*qco=*qco+1;//операция сравнения
+		}
+		*qco=*qco+1;//операция сравнения
+		for (i = k; i > j; i--)//цикл сдвига значений
+		{
+			array[i]=array[i-1];//сдвиг значения
+			*qas=*qas+1;//операция присваивания
+		}
+		array[j]=array[0];//вставка элемента из нулевого
+		*qas=*qas+1;//операция присваивания
+	}
+}
+
+int sort1(int qel, int *qas, int *qco, int *array)//сортировка массива
+{
+	int k,j,i; //определение переменных
+	for (k = 2; k <=qel ; k++)//проход по всем элементам после первого
+	{
+		array[0]=array[k];//передача сравниваемого элемента в нулевой элемент
+		*qas=*qas+1;//операция присваивания
+		if (array[0]>array[qel/2])
+		{
+			j=qel/2;
+			while((array[j]<array[0])&&(j<k))//проход по отсортированным элементам
+			{
+				j++;//изменение счетчика
+				*qco=*qco+1;//операция сравнения
+			}
+		}
+		else
+		{
+			j=1;//сброс счетчика
+			while((array[j]<array[0])&&(j<qel/2))//проход по отсортированным элементам
+			{
+				j++;//изменение счетчика
+				*qco=*qco+1;//операция сравнения
+			}
+		}
+		*qco=*qco+2;//операция сравнения
+		for (i = k; i > j; i--)//цикл сдвига значений
+		{
+			array[i]=array[i-1];//сдвиг значения
+			*qas=*qas+1;//операция присваивания
+		}
+		array[j]=array[0];//вставка элемента из нулевого
+		*qas=*qas+1;//операция присваивания
+	}
+}
+
